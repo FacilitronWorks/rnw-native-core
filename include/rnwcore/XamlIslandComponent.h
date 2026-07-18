@@ -50,10 +50,20 @@
 //     already defines `comp` = Microsoft::UI::Composition at global scope
 //     (C2881). Use a different alias (this header uses rnwcore_rncomp
 //     internally via fully-qualified names).
-//   - STATUS: this standalone header has not been compile-validated yet; it is
-//     a faithful generalization of component code that compiles and runs in a
-//     production app. See README "Build validation".
+//   - STATUS: compile-validated standalone against react-native-windows 0.83.2
+//     (ARM64, Debug, MSVC v143, C++20) as its own translation unit — no pch —
+//     together with example/BadgeView.cpp. See README "Build validation".
 // ============================================================================
+
+// NOT optional, and deliberately first: this header calls XamlIsland::Close()
+// (Windows.Foundation.IClosable) and names IInspectable. The Microsoft.*
+// projections only forward-declare the IClosable consume_ mixin, so a
+// translation unit that has not already pulled in Windows.Foundation dies with
+//   C3779: 'consume_Windows_Foundation_IClosable<D>::Close': a function that
+//          returns 'auto' cannot be used before it is defined
+// Consumers whose pch includes it never noticed; the 0.1.0 standalone compile
+// validation did.
+#include <winrt/Windows.Foundation.h>
 
 #include <winrt/Microsoft.ReactNative.h>
 #include <winrt/Microsoft.ReactNative.Composition.h>

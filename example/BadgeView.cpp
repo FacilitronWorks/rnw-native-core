@@ -1,7 +1,14 @@
-// Example subclass — see BadgeView.h. Compiling-quality; part of the same
-// "extraction from a working production pattern, standalone build validation
-// pending" caveat as the header (README "Build validation").
+// Example subclass — see BadgeView.h. Compile-validated (compiles AND links)
+// against react-native-windows 0.83.2, ARM64 Debug, MSVC v143 / C++20.
 #include "BadgeView.h"
+
+// Required for UIElement::Tapped: <winrt/Microsoft.UI.Xaml.Controls.h> only
+// declares TappedEventHandler; its templated constructor (the one that wraps
+// your lambda) is *defined* in the Input projection. Without this you compile
+// clean and then fail at link with
+//   LNK2019: unresolved external symbol ... TappedEventHandler::TappedEventHandler<lambda>
+// Same class of trap as the Windows.Foundation include in the core header.
+#include <winrt/Microsoft.UI.Xaml.Input.h>
 
 #include <string>
 

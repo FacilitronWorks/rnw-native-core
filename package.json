@@ -1,0 +1,50 @@
+{
+  "name": "@facilitronworks/rnw-native-core",
+  "version": "0.1.0-alpha.0",
+  "description": "Header-only C++ primitive for react-native-windows New Architecture: host any WinUI 3 / XAML control inside the RN Fabric/Composition tree via XamlIsland -> ContentIsland -> ContentIslandComponentView::Connect.",
+  "license": "MIT",
+  "author": "FacilitronWorks",
+  "homepage": "https://github.com/FacilitronWorks/rnw-native-core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FacilitronWorks/rnw-native-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FacilitronWorks/rnw-native-core/issues"
+  },
+  "keywords": [
+    "react-native-windows",
+    "react-native",
+    "windows",
+    "winui",
+    "winui3",
+    "xaml",
+    "xamlisland",
+    "contentisland",
+    "fabric",
+    "new-architecture",
+    "composition",
+    "cppwinrt",
+    "header-only",
+    "native-component"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "include/",
+    "build/",
+    "example/",
+    "docs/",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "react-native-windows": ">=0.83.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native-windows": {
+      "optional": true
+    }
+  }
+}

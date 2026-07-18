@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  rnw-native-core — consumer property sheet.
+
+  Puts include/rnwcore/XamlIslandComponent.h on the include path of the
+  importing C++/WinRT project, so `#include <rnwcore/XamlIslandComponent.h>`
+  resolves.
+
+  There is NO autolinking for this package: it is header-only and ships no
+  .vcxproj, and react-native-windows autolinking only emits ProjectReference
+  entries (plus package-provider glue) for dependencies that HAVE a Windows
+  project. So the import is one explicit line in your library/app .vcxproj,
+  placed anywhere after the standard PropertySheets ImportGroup:
+
+    <Import Project="$(SolutionDir)..\node_modules\@facilitronworks\rnw-native-core\build\rnw-native-core.props" />
+
+  (or, from a library project that lives under node_modules alongside it:
+
+    <Import Project="$(MSBuildThisFileDirectory)..\..\..\@facilitronworks\rnw-native-core\build\rnw-native-core.props" />
+
+  — whatever relative path reaches the installed package.)
+
+  Everything below is path-only: no toolset, no configuration, no target
+  framework opinions, so it cannot conflict with the RNW property sheets.
+-->
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="RnwNativeCore">
+    <!-- Root of the installed package, with trailing slash. Also exposed for
+         consumers who want to reference example/ or docs/ from their build. -->
+    <RnwNativeCoreDir Condition="'$(RnwNativeCoreDir)' == ''">$(MSBuildThisFileDirectory)..\</RnwNativeCoreDir>
+    <RnwNativeCoreIncludeDir Condition="'$(RnwNativeCoreIncludeDir)' == ''">$(RnwNativeCoreDir)include\</RnwNativeCoreIncludeDir>
+    <!-- Version stamp, handy for diagnosing a stale install from a build log. -->
+    <RnwNativeCoreVersion>0.1.0-alpha.0</RnwNativeCoreVersion>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(RnwNativeCoreIncludeDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <Target Name="RnwNativeCoreVerifyHeaderPresent" BeforeTargets="ClCompile" Condition="!Exists('$(RnwNativeCoreIncludeDir)rnwcore\XamlIslandComponent.h')">
+    <Error Text="rnw-native-core: expected header not found at $(RnwNativeCoreIncludeDir)rnwcore\XamlIslandComponent.h. Check the Import path for rnw-native-core.props." />
+  </Target>
+</Project>
