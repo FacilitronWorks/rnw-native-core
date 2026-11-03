@@ -196,15 +196,35 @@ on transitively:
   but they have been executed at runtime in that hand-written form, not through
   `XamlIslandComponentRegistrar<T>`. No mount/unmount/leak test has been run
   against this packaging.
-- RNW versions other than 0.83.2.
+- RNW versions other than 0.83.2 and 0.85.0.
+
+### react-native-windows 0.85.0 (November 2026)
+
+**PASSED, no source changes needed.** The same two translation units — one that
+instantiates `XamlIslandComponentRegistrar<rnwcore_example::BadgeView>::Register(...)`,
+and `example/BadgeView.cpp` — were compiled **with no precompiled header**, as
+C++20, and linked into a real Fabric library DLL in a consuming app's solution:
+
+- **Target:** `Configuration=Release`, `Platform=ARM64`, against
+  `Microsoft.ReactNative` **0.85.0** built from source (the app's own RNW 0.85.0
+  patch applied), react-native 0.85.3, WinAppSDK 1.8.260508005.
+- **Toolchain:** Visual Studio 2026 (18.6), MSVC 14.51 (`v145`), Windows SDK
+  10.0.22621.0.
+- **Result:** exit code 0, no warnings from either TU, DLL linked.
+- Every RNW source file cited in `docs/VERIFIED-API.md` was re-read at the
+  0.85.0 tag. The ABI the header uses is unchanged; two citations moved because
+  0.85.0 added code above them (see that file's 0.85.0 section).
+
+Still not covered on 0.85.0: x64, the Visual Studio 2022 `v143` toolset, and
+runtime mount/unmount.
 
 ## Status matrix
 
 | Piece | Status |
 | --- | --- |
 | Hosting pattern (island bootstrap, Connect, registry, teardown) | ✅ **Production-proven** inside a shipping app's WebView component |
-| ABI surface used | ✅ Verified against RNW 0.83.2 IDLs/sources, file:line cited in `docs/VERIFIED-API.md` |
-| This header as packaged (generalized base class + registrar template) | ✅ **Compiles + links** standalone, RNW 0.83.2 / ARM64 Debug / MSVC v143 / C++20 (see [Build validation](#build-validation)) |
+| ABI surface used | ✅ Verified against RNW 0.83.2 IDLs/sources, file:line cited in `docs/VERIFIED-API.md`; re-verified unchanged at 0.85.0 |
+| This header as packaged (generalized base class + registrar template) | ✅ **Compiles + links** standalone, RNW 0.83.2 / ARM64 Debug / MSVC v143 / C++20, and RNW 0.85.0 / ARM64 Release / MSVC v145 / C++20 (see [Build validation](#build-validation)) |
 | `example/BadgeView` | ✅ Compiles + links standalone (same matrix) |
 | Runtime behavior of the generalized template | ⏳ Unproven — the pattern runs in production, this packaging of it has not been mounted |
 | CI matrix (x64/Win32, Release) | ⏳ Not run yet — ARM64 Debug only |
@@ -232,6 +252,15 @@ on transitively:
   compile, dead link). Include what you call, in the header that calls it.
 - **Event names must be `top*`-prefixed** to pass core's `normalizeEventType`
   unchanged; map them to `on*` registration names in your JS view config.
+- **Scaled displays need a react-native-windows fix.** RNW's
+  `ContentIslandComponentView` puts the island's placement visual into its
+  physical-pixel composition tree unscaled, while the child site reports that the
+  host applies the rasterization scale. On a 200% display the hosted content
+  therefore lays out at its DIP size and draws at half size in the top-left of its
+  frame. This is unchanged from RNW 0.83.2 through 0.85.0. The production app
+  patches RNW to scale the placement visual by `pointScaleFactor` in
+  `ContentIslandComponentView::ConnectInternal`; until that is fixed upstream, a
+  consuming app needs the same.
 
 ## Roadmap
 
