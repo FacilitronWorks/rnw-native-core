@@ -5,6 +5,28 @@ react-native-windows **0.83.2** sources on disk (July 2026) before the pattern
 shipped in production. Paths are relative to `node_modules/react-native-windows/`
 unless noted. This file is the receipts; the header is the code.
 
+## Re-verified at react-native-windows 0.85.0 (November 2026)
+
+Every file cited below was compared between the `0.83.2` and `0.85.0` npm
+packages. The ABI this header uses is unchanged. What moved:
+
+| Citation (0.83.2) | At 0.85.0 | Why |
+| --- | --- | --- |
+| `ReactPackageBuilder.cpp:37` (`AddViewComponent`) | `:44` | 0.85.0 adds `AddEagerInitTurboModule` above it |
+| `ViewProps.idl:36-42` (`IComponentProps.SetProp`) | `:44-50` (`SetProp` at `:49`) | 0.85.0 adds an experimental `Overflow` enum above it |
+| `IReactCompositionViewComponentBuilder.idl:22`, `:71` | unchanged | 0.85.0 only adds a doc string after `:75` |
+| `WindowsComponentDescriptorRegistry.cpp:57-61` | unchanged lines | the name list became a set; the XAML-support check is the same |
+
+Byte-identical at 0.85.0 (after line-ending normalization):
+`IReactPackageBuilderFabric.idl`, `IReactViewComponentBuilder.idl`,
+`IJSValueReader.idl`, `ReactCompositionViewComponentBuilder.cpp`,
+`CompositionComponentView.idl`, `ComponentView.idl`, `Fabric/AbiEventEmitter.cpp`,
+`Fabric/Composition/ContentIslandComponentView.{h,cpp}`, `ReactNativeHost.cpp`
+and `XamlApplication.{h,cpp}`. `RNW_XAML_ISLAND` is still defined
+unconditionally at `Microsoft.ReactNative.vcxproj:128`.
+
+The line numbers in the sections below are the 0.83.2 ones.
+
 ## Fabric component registration (the exact 0.83.2 ABI)
 
 1. **`IReactPackageBuilderFabric.AddViewComponent(String componentName, ReactViewComponentProvider provider)`**
